@@ -25,21 +25,22 @@
             z-index: -2;
         }
 
-        /* 靜態遮罩：不使用 blur 濾鏡以節省 4060 效能 */
+        /* 靜態半透明遮罩：取代耗能的 blur 濾鏡 */
         .bg-overlay {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.8);
+            background: rgba(0, 0, 0, 0.85);
             z-index: -1;
         }
 
         .container {
-            background: rgba(10, 10, 15, 0.95);
+            position: relative;
+            background: rgba(10, 10, 15, 0.98);
             padding: 50px 80px;
             border-radius: 4px;
             text-align: center;
             max-width: 620px;
-            border: 1px solid #222;
+            border: 1px solid #333;
         }
 
         h1 {
@@ -47,31 +48,16 @@
             font-size: 2.5em;
             margin-bottom: 20px;
             color: #4da6ff;
-            letter-spacing: 2px;
             text-transform: uppercase;
+            letter-spacing: 2px;
         }
 
-        p {
-            font-size: 1.1em;
-            color: #888;
-            margin-bottom: 30px;
-            line-height: 1.6;
-        }
-        
-        .server-ip {
-            color: #FF5733; 
-            font-weight: bold;
-            font-size: 1.6em; 
-            display: block; 
-            margin-bottom: 25px;
-            font-family: 'Oswald', sans-serif;
-        }
-
-        /* --- 慢速步進進度條：GPU 友善設計 --- */
-        .loader-box {
+        /* --- 讀條優化段落 --- */
+        .loader-wrapper {
             width: 200px; 
-            height: 2px;
-            background: rgba(255, 255, 255, 0.05);
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
             margin: 0 auto 35px auto;
             position: relative;
             overflow: hidden;
@@ -83,13 +69,29 @@
             width: 100%;
             height: 100%;
             background: #4da6ff;
-            /* 改為 3 秒一週期，並用 steps(15) 強制降頻 */
-            animation: slow-slide 3s steps(15) infinite;
+            /* 效能關鍵：3 秒跑完一圈，並用 steps(10) 強制降頻 */
+            animation: slow-slide 3s steps(10) infinite;
         }
 
         @keyframes slow-slide {
             from { left: -100%; }
             to { left: 100%; }
+        }
+
+        p {
+            font-size: 1.1em;
+            color: #aaa;
+            margin-bottom: 30px;
+            line-height: 1.8;
+        }
+        
+        .server-ip {
+            color: #FF5733; 
+            font-weight: bold;
+            font-size: 1.8em; 
+            display: block; 
+            margin-bottom: 35px;
+            font-family: 'Oswald', sans-serif;
         }
 
         .manual-link {
@@ -100,11 +102,11 @@
             text-decoration: none;
             border-radius: 2px;
             font-weight: bold;
-            transition: opacity 0.2s;
+            transition: background 0.2s;
         }
 
         .manual-link:hover {
-            opacity: 0.8;
+            background-color: #1a7bb9;
         }
         
         .cs2-blue { color: #4da6ff; font-weight: 900; }
@@ -119,19 +121,19 @@
 <div class="container">
     <h1>CONNECTING <span class="text-red">5 v 5</span></h1>
     
-    <div class="loader-box">
+    <div class="loader-wrapper">
         <div class="loader-bar"></div>
     </div>
     
     <p>
-        正在連線至伺服器，請稍候。<br>
-        您的 <span class="cs2-blue">CS2</span> 將在 <span class="text-red">３</span> 秒鐘後啟動。
+        正在準備連線到伺服器，請稍候。<br>
+        您的 <span class="cs2-blue">CS2</span> 將在 <span class="text-red">３</span> 秒鐘後自動啟動。
     </p>
     
     <code class="server-ip">114.34.29.54:27015</code>
     
     <a href="steam://connect/114.34.29.54:27015" class="manual-link">
-        立即連線
+        手動連線
     </a>
 </div>
 
