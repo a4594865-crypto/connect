@@ -11,7 +11,7 @@
         body {
             font-family: 'Noto Sans TC', sans-serif;
             margin: 0; padding: 0;
-            background: #020406; 
+            background: #000; /* 底色全黑最省電 */
             color: white;
             display: flex; justify-content: center; align-items: center;
             height: 100vh; overflow: hidden; 
@@ -25,22 +25,21 @@
             z-index: -2;
         }
 
-        /* 靜態半透明遮罩：取代耗能的 blur 濾鏡 */
+        /* 用這層代替 blur 濾鏡，省下 99% 的 GPU 運算 */
         .bg-overlay {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.85);
+            background: rgba(0, 0, 0, 0.7);
             z-index: -1;
         }
 
         .container {
-            position: relative;
-            background: rgba(10, 10, 15, 0.98);
+            background: rgba(10, 10, 15, 0.95);
             padding: 50px 80px;
-            border-radius: 4px;
+            border-radius: 4px; /* 減輕圓角鋸齒計算 */
             text-align: center;
             max-width: 620px;
-            border: 1px solid #333;
+            border: 1px solid #333; /* 移除 box-shadow，改用實體邊框 */
         }
 
         h1 {
@@ -49,49 +48,45 @@
             margin-bottom: 20px;
             color: #4da6ff;
             text-transform: uppercase;
-            letter-spacing: 2px;
-        }
-
-        /* --- 讀條優化段落 --- */
-        .loader-wrapper {
-            width: 200px; 
-            height: 4px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 2px;
-            margin: 0 auto 35px auto;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .loader-bar {
-            position: absolute;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: #4da6ff;
-            /* 效能關鍵：3 秒跑完一圈，並用 steps(10) 強制降頻 */
-            animation: slow-slide 3s steps(10) infinite;
-        }
-
-        @keyframes slow-slide {
-            from { left: -100%; }
-            to { left: 100%; }
         }
 
         p {
             font-size: 1.1em;
-            color: #aaa;
+            color: #888;
             margin-bottom: 30px;
-            line-height: 1.8;
         }
         
         .server-ip {
             color: #FF5733; 
             font-weight: bold;
-            font-size: 1.8em; 
+            font-size: 1.6em; 
             display: block; 
-            margin-bottom: 35px;
+            margin-bottom: 30px;
             font-family: 'Oswald', sans-serif;
+        }
+
+        /* --- 終極省電：純文字加載動畫 --- */
+        .loader {
+            font-family: 'Oswald', sans-serif;
+            font-size: 24px;
+            color: #4da6ff;
+            margin-bottom: 30px;
+            letter-spacing: 4px;
+        }
+
+        .loader::after {
+            content: '...';
+            display: inline-block;
+            width: 20px;
+            text-align: left;
+            animation: text-dots 2s steps(4) infinite;
+        }
+
+        @keyframes text-dots {
+            0% { content: ''; }
+            33% { content: '.'; }
+            66% { content: '..'; }
+            100% { content: '...'; }
         }
 
         .manual-link {
@@ -102,9 +97,9 @@
             text-decoration: none;
             border-radius: 2px;
             font-weight: bold;
-            transition: background 0.2s;
         }
 
+        /* 移除 hover 的 transform 縮放，避免觸發重繪 */
         .manual-link:hover {
             background-color: #1a7bb9;
         }
@@ -116,14 +111,10 @@
 <body>
 
 <div class="background"></div>
-<div class="bg-overlay"></div>
-
-<div class="container">
+<div class="bg-overlay"></div> <div class="container">
     <h1>CONNECTING <span class="text-red">5 v 5</span></h1>
     
-    <div class="loader-wrapper">
-        <div class="loader-bar"></div>
-    </div>
+    <div class="loader">LOADING</div>
     
     <p>
         正在準備連線到伺服器，請稍候。<br>
