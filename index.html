@@ -9,37 +9,42 @@
 
     <style>
         body {
-            font-family: 'Noto Sans TC', sans-serif;
-            margin: 0; padding: 0;
-            background: #000; /* 底色全黑最省電 */
+            font-family: 'Noto Sans TC', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #020406; 
             color: white;
-            display: flex; justify-content: center; align-items: center;
-            height: 100vh; overflow: hidden; 
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden; 
         }
 
         .background {
             position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             background-image: url('https://raw.githubusercontent.com/papa8855/MAP/refs/heads/main/11129.jpg'); 
-            background-size: cover; background-position: center;
-            z-index: -2;
-        }
-
-        /* 用這層代替 blur 濾鏡，省下 99% 的 GPU 運算 */
-        .bg-overlay {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.7);
+            background-size: cover;
+            background-position: center;
+            filter: brightness(0.5) blur(4px);
             z-index: -1;
+            /* 效能優化：防止背景層觸發重繪 */
+            will-change: transform;
         }
 
         .container {
-            background: rgba(10, 10, 15, 0.95);
+            position: relative;
+            background: rgba(0, 0, 0, 0.9);
             padding: 50px 80px;
-            border-radius: 4px; /* 減輕圓角鋸齒計算 */
+            border-radius: 8px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
             text-align: center;
             max-width: 620px;
-            border: 1px solid #333; /* 移除 box-shadow，改用實體邊框 */
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         h1 {
@@ -47,13 +52,15 @@
             font-size: 2.5em;
             margin-bottom: 20px;
             color: #4da6ff;
+            letter-spacing: 2px;
             text-transform: uppercase;
         }
 
         p {
             font-size: 1.1em;
-            color: #888;
+            color: #aaa;
             margin-bottom: 30px;
+            line-height: 1.6;
         }
         
         .server-ip {
@@ -61,32 +68,37 @@
             font-weight: bold;
             font-size: 1.6em; 
             display: block; 
-            margin-bottom: 30px;
+            margin-top: 10px;
+            margin-bottom: 25px;
             font-family: 'Oswald', sans-serif;
         }
 
-        /* --- 終極省電：純文字加載動畫 --- */
+        /* --- 進度條優化：低頻率渲染 --- */
         .loader {
-            font-family: 'Oswald', sans-serif;
-            font-size: 24px;
-            color: #4da6ff;
-            margin-bottom: 30px;
-            letter-spacing: 4px;
+            width: 240px; 
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+            margin: 0 auto 30px auto;
+            position: relative;
+            overflow: hidden;
         }
 
         .loader::after {
-            content: '...';
-            display: inline-block;
-            width: 20px;
-            text-align: left;
-            animation: text-dots 2s steps(4) infinite;
+            content: '';
+            position: absolute;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, #4da6ff, transparent);
+            box-shadow: 0 0 15px rgba(77, 166, 255, 0.5);
+            /* 優化：使用 steps(20) 降低每秒計算次數 */
+            animation: slide-progress 2s steps(20) infinite;
         }
 
-        @keyframes text-dots {
-            0% { content: ''; }
-            33% { content: '.'; }
-            66% { content: '..'; }
-            100% { content: '...'; }
+        @keyframes slide-progress {
+            from { left: -100%; }
+            to { left: 100%; }
         }
 
         .manual-link {
@@ -95,36 +107,48 @@
             background-color: #4da6ff;
             color: white;
             text-decoration: none;
-            border-radius: 2px;
+            border-radius: 4px;
             font-weight: bold;
+            font-size: 1em;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
         }
 
-        /* 移除 hover 的 transform 縮放，避免觸發重繪 */
         .manual-link:hover {
             background-color: #1a7bb9;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(77, 166, 255, 0.3);
         }
         
-        .cs2-blue { color: #4da6ff; font-weight: 900; }
-        .text-red { color: #FF5733; font-weight: 900; }
+        .cs2-blue {
+            color: #4da6ff;
+            font-weight: 900;
+        }
+
+        .text-red {
+            color: #FF5733; 
+            font-weight: 900;
+        }
     </style>
 </head>
 <body>
 
 <div class="background"></div>
-<div class="bg-overlay"></div> <div class="container">
-    <h1>CONNECTING <span class="text-red">5 v 5</span></h1>
+
+<div class="container">
+    <h1>正連線至 <span class="text-red">５ v ５</span> 伺 服 器</h1>
     
-    <div class="loader">LOADING</div>
+    <div class="loader"></div>
     
     <p>
         正在準備連線到伺服器，請稍候。<br>
-        您的 <span class="cs2-blue">CS2</span> 將在 <span class="text-red">３</span> 秒鐘後自動啟動。
+        您的 <span class="cs2-blue">Counter-Strike 2</span> 客戶端將在 <span class="text-red">３</span> 秒鐘後自動啟動。
     </p>
     
     <code class="server-ip">114.34.29.54:27015</code>
     
     <a href="steam://connect/114.34.29.54:27015" class="manual-link">
-        手動連線
+        如果沒有自動跳轉，請點擊這裡
     </a>
 </div>
 
