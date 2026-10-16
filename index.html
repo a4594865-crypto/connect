@@ -65,7 +65,7 @@ p{font-size:1.1em;color:#aaa;margin-bottom:20px;line-height:1.6}
             ５ v ５-A (27015)
         </a>
 
-        <a href="steam://run/730//+connect 114.34.29.54:27016" class="manual-link third" id="btn-c">
+        <a href="#" class="manual-link third" id="btn-c">
             ５ v ５-B (假 日)
         </a>
     </div>
@@ -73,15 +73,33 @@ p{font-size:1.1em;color:#aaa;margin-bottom:20px;line-height:1.6}
 
 <script>
     document.addEventListener("DOMContentLoaded", function() {
-        var today = new Date().getDay();
         var btnC = document.getElementById("btn-c");
-        if (today >= 1 && today <= 5) {
+        if (!btnC) return;
+
+        // 1. 取得使用者當前時間，並強制轉換為標準的台灣時間 (UTC+8)
+        var now = new Date();
+        var utc = now.getTime() + (now.getTimezoneOffset() * 60000);
+        var twTime = new Date(utc + (3600000 * 8));
+        
+        var day = twTime.getDay(); // 0=星期日, 1=星期一, ..., 5=星期五, 6=星期六
+        var hour = twTime.getHours(); // 0 ~ 23
+
+        // 2. 判斷是否在開放時段：星期五 22:00 起 ～ 星期日 21:59 (不到 22:00)
+        var isOpenTime = (day === 5 && hour >= 22) || (day === 6) || (day === 0 && hour < 22);
+
+        // 3. 根據時間切換按鈕狀態 (暫時不依賴 Steam API 偵測)
+        if (isOpenTime) {
+            btnC.classList.remove("disabled");
+            btnC.innerHTML = "５ v ５-B (27016)";
+            btnC.setAttribute("href", "steam://run/730//+connect 114.34.29.54:27016");
+        } else {
             btnC.classList.add("disabled");
-            btnC.innerHTML = "５ v ５-B (假日限定)";
+            btnC.innerHTML = "５ v ５-B (未開)";
             btnC.removeAttribute("href");
         }
     });
 </script>
+
 
 </body>
 </html>
